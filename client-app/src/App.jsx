@@ -1,9 +1,10 @@
 import React from "react";
+import InferenceWindow from './inference-flow/InferenceWindow';
 
 function App() {
   return (
     <main>
-      {/* This is the main content of the application. */}
+      <InferenceWindow />
     </main>
   );
 }
