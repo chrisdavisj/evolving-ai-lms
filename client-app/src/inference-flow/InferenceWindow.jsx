@@ -1,14 +1,154 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Camera, ImageIcon } from "lucide-react";
 import { Button } from "../reusable-ui-components/Button"
 
+import ChatPanel from "./sub-views/ChatPanel";
+import CameraPanel from "./sub-views/CameraPanel";
+import ImageUploader from "./sub-views/ImageUploader";
+import ControlsPanel from "./sub-views/ControlsPanel";
+import Visualizer from "./sub-views/Visualizer";
 import "./InferenceWindow.css";
 
 export default function InferenceWindow() {
+  const [image, setImage] = useState(null);
+  const [text, setText] = useState("");
+  const [listening, setListening] = useState(false);
+  const [transcribing, setTranscribing] = useState(false);
+  const [chatHistory, setChatHistory] = useState([]);
+  const [audioBlob, setAudioBlob] = useState(null);
+  const [flashcard, setFlashcard] = useState(null);
   const [mode, setMode] = useState(null);
+  const [capturedImage, setCapturedImage] = useState(null);
+  const [showFlash, setShowFlash] = useState(false);
+  const [volume, setVolume] = useState(0);
+
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
+  const mediaRecorderRef = useRef(null);
+  const chunksRef = useRef([]);
+  const audioContextRef = useRef(null);
+  const analyserRef = useRef(null);
+  const sourceRef = useRef(null);
+  const volumeIntervalRef = useRef(null);
+
+
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImage(URL.createObjectURL(file));
+    }
+  };
+
+  const startCamera = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+      }
+    } catch (err) {
+      console.error("Camera access error", err);
+    }
+  };
+
+  const captureImage = () => {
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    if (video && canvas) {
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const dataUrl = canvas.toDataURL("image/png");
+      setCapturedImage(dataUrl);
+      setShowFlash(true);
+      setTimeout(() => setShowFlash(false), 200);
+    }
+  };
+
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = mediaRecorder;
+      chunksRef.current = [];
+
+      mediaRecorder.ondataavailable = (e) => chunksRef.current.push(e.data);
+      mediaRecorder.onstop = async () => {
+        const blob = new Blob(chunksRef.current, { type: 'audio/webm' });
+        setAudioBlob(blob);
+        setTranscribing(true);
+        stopVolumeMeter();
+        await transcribeWithWhisper(blob);
+        setTranscribing(false);
+      };
+
+      mediaRecorder.start();
+      setupVolumeMeter(stream);
+      setListening(true);
+    } catch (err) {
+      console.error("Microphone access error", err);
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorderRef.current && listening) {
+      mediaRecorderRef.current.stop();
+      setListening(false);
+    }
+  };
+
+  const setupVolumeMeter = (stream) => {
+    audioContextRef.current = new AudioContext();
+    analyserRef.current = audioContextRef.current.createAnalyser();
+    sourceRef.current = audioContextRef.current.createMediaStreamSource(stream);
+    sourceRef.current.connect(analyserRef.current);
+    analyserRef.current.fftSize = 256;
+    const bufferLength = analyserRef.current.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
+
+    volumeIntervalRef.current = setInterval(() => {
+      analyserRef.current.getByteFrequencyData(dataArray);
+      const avg = dataArray.reduce((a, b) => a + b, 0) / bufferLength;
+      setVolume(avg);
+    }, 100);
+  };
+
+  const stopVolumeMeter = () => {
+    if (volumeIntervalRef.current) {
+      clearInterval(volumeIntervalRef.current);
+    }
+    if (audioContextRef.current) {
+      audioContextRef.current.close();
+    }
+    setVolume(0);
+  };
+
+  const transcribeWithWhisper = async (blob) => {
+    console.log("Transcribing... (stub)", blob);
+    await new Promise((res) => setTimeout(res, 1500));
+    setText("This is a sample transcription from local Whisper");
+  };
+
+  const handleSubmit = () => {
+    const inputContent = mode === 'image' ? image : capturedImage;
+    setChatHistory(prev => [...prev, { role: 'user', text, image: inputContent }]);
+
+    setTimeout(() => {
+      const response = `You said: ${text}`;
+      setChatHistory(prev => [...prev, { role: 'assistant', text: `Flash Card Contents:\n${response}` }]);
+      setFlashcard(response);
+    }, 800);
+
+    setText("");
+  };
+
+  const dismissFlashcard = () => {
+    setFlashcard(null);
+  };
 
   return (
     <div className="app-container">
+      {showFlash && <div className="flash-overlay"></div>}
       <div className="app-content">
         <div className="main-panel">
           <h1 className="heading">Evolving AI LMS</h1>
@@ -18,7 +158,41 @@ export default function InferenceWindow() {
               <Button onClick={() => setMode('image')}><ImageIcon className="icon" /> Upload Image</Button>
             </div>
           )}
+
+          {mode === 'camera' && (
+            <CameraPanel
+              capturedImage={capturedImage}
+              videoRef={videoRef}
+              canvasRef={canvasRef}
+              startCamera={startCamera}
+              captureImage={captureImage}
+              setCapturedImage={setCapturedImage}
+              flashcard={flashcard}
+              dismissFlashcard={dismissFlashcard}
+            />
+          )}
+
+          {mode === 'image' && (
+            <ImageUploader
+              image={image}
+              handleImageUpload={handleImageUpload}
+              flashcard={flashcard}
+              dismissFlashcard={dismissFlashcard}
+            />
+          )}
+          <div className="controls-with-visualizer">
+            <ControlsPanel
+              text={text}
+              listening={listening}
+              transcribing={transcribing}
+              startRecording={startRecording}
+              stopRecording={stopRecording}
+              handleSubmit={handleSubmit}
+            />
+            {listening && <Visualizer volume={volume} />}
+          </div>
         </div>
+        <ChatPanel chatHistory={chatHistory} />
       </div>
     </div>
   );

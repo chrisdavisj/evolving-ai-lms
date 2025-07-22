@@ -1,0 +1,14 @@
+.visualizer-horizontal-container {
+  width: 80px;
+  height: 10px;
+  background: #333;
+  border-radius: 4px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+
+.visualizer-horizontal-bar {
+  height: 100%;
+  transition: width 0.1s ease, background-color 0.1s ease;
+}

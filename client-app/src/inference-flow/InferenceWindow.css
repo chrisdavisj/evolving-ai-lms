@@ -20,7 +20,8 @@
   }
 }
 
-.main-panel {
+.main-panel,
+.chat-panel {
   flex: 1;
   height: 100%;
   overflow-y: auto;
@@ -48,4 +49,67 @@
   justify-content: center;
   gap: 1rem;
   margin-bottom: 1rem;
+}
+
+.controls-with-visualizer {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.controls-with-visualizer .controls {
+  flex-grow: 1;
+}
+
+.controls-with-visualizer.compact {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+/* Media Section */
+.media-viewer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1rem;
+  flex-direction: column;
+}
+
+.media-display {
+  width: 100%;
+  max-height: 400px;
+  object-fit: contain;
+  border-radius: 1rem;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+}
+
+.media-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+/* Flashcard */
+.flashcard-close {
+  background: none;
+  border: none;
+  color: #111;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* Flash effect */
+.flash-overlay {
+  position: fixed;
+  inset: 0;
+  background: white;
+  opacity: 0.9;
+  z-index: 999;
+  animation: fadeFlash 200ms ease-out;
+}
+
+@keyframes fadeFlash {
+  0% { opacity: 0.9; }
+  100% { opacity: 0; }
 }
