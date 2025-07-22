@@ -1,0 +1,46 @@
+.flashcard-overlay {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  z-index: 10;
+  max-width: 80%;
+  pointer-events: auto;
+}
+.flashcard-card {
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(12px);
+  border-radius: 1rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  padding: 1rem 1.25rem;
+  color: #f9fafb;
+  max-width: 280px;
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.4;
+  z-index: 999;
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.flashcard-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.flashcard-text {
+  flex: 1;
+  margin: 0;
+  word-break: break-word;
+}
+
+.flashcard-close {
+  background: none;
+  border: none;
+  color: #f9fafb;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 0.5rem;
+  line-height: 1;
+}
