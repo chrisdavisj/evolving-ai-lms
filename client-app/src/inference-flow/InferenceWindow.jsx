@@ -155,14 +155,72 @@ export default function InferenceWindow() {
     const inputContent = mode === 'image' ? image : capturedImage;
     setChatHistory(prev => [...prev, { role: 'user', text, image: inputContent }]);
 
-    setTimeout(() => {
-      const response = `You said: ${text}`;
-      setChatHistory(prev => [...prev, { role: 'assistant', text: `Flash Card Contents:\n${response}` }]);
-      setFlashcard(response);
-    }, 800);
+    chat_inference();
 
     setText("");
   };
+
+  const toBase64 = (blob) =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(blob);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
+    
+  const chat_inference = async () => {
+    try {
+      const conversation = await Promise.all(
+        chatHistory.map(async (entry, index) => {
+          let base64Images = [];
+
+          if (entry.image && typeof entry.image === "string" && entry.image.startsWith("blob:")) {
+            try {
+              const blob = await fetch(entry.image).then((res) => res.blob());
+              const base64 = await toBase64(blob);
+              base64Images = [base64];
+            } catch (err) {
+              console.warn(`Failed to convert blob at entry ${index}:`, err);
+            }
+          }
+
+          return {
+            role: entry.role,
+            message: entry.text,
+            images: base64Images,
+          };
+        })
+      );    
+
+      console.log("Sending conversation to server:", conversation);
+      
+      const response = await fetch(API_ENDPOINTS.INFERENCE, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ conversation })
+      });
+
+      console.log("Server responded with status:", response.status);
+
+      if (!response.ok) {
+        const text = await response.text();
+        console.error("Server error response:", text);
+        throw new Error("Inference failed");
+      }
+
+      const data = await response.json();
+      console.log("Inference result:", data);
+      
+      setChatHistory(prev => [...prev, { role: 'assistant', text: `${data.explanation.trim()} \n\n\n Flashcard ${data.flashcard_contents.trim()}` }]);
+      
+      setFlashcard(data.flashcard_contents.trim());
+
+    } catch (err) {
+      console.error("Inference error:", err);
+    }
+  }
 
   const dismissFlashcard = () => {
     setFlashcard(null);
