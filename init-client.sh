@@ -14,4 +14,4 @@ fi
 (cd transcribe-edge && ./build-whisper-local.sh) &
 
 # Start client app in foreground
-(cd client-app && npm run dev)
+(cd client-app && npm install && npm run dev)
