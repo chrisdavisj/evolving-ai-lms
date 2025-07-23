@@ -192,14 +192,17 @@ export default function InferenceWindow() {
         })
       );    
 
-      console.log("Sending conversation to server:", conversation);
-      
+      const payload = {
+      learner_context: "learnerContext",
+      conversation: conversation,
+    };
+
       const response = await fetch(API_ENDPOINTS.INFERENCE, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ conversation })
+        body: JSON.stringify(payload)
       });
 
       console.log("Server responded with status:", response.status);

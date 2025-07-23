@@ -8,8 +8,8 @@ def generate_learner_context(request_data):
     )
 
 
-def run_inference(conversation):
-    print("Running inference on conversation:", conversation)
+def run_inference(conversation, learner_context=""):
+    print("Running inference on:", conversation, learner_context)
     return {
         "explanation": "Response based on analysis of conversation.",
         "flashcard_contents": "summarative flashcard content",

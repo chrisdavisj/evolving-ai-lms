@@ -10,3 +10,5 @@ class Message(BaseModel):
 
 class InferenceRequest(BaseModel):
     conversation: List[Message]
+    learner_context: str = Field(
+        ..., example="I am a 25-year-old with a Bachelor's Degree, aiming to learn Python. Challenges: time management. Background: data analysis.")
