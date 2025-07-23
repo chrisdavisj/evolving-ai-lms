@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { Camera, ImageIcon } from "lucide-react";
+import { Camera, ImageIcon, TicketX } from "lucide-react";
 import { Button } from "../reusable-ui-components/Button"
 
 import ChatPanel from "./sub-views/ChatPanel";
@@ -124,9 +124,30 @@ export default function InferenceWindow() {
   };
 
   const transcribeWithWhisper = async (blob) => {
-    console.log("Transcribing... (stub)", blob);
-    await new Promise((res) => setTimeout(res, 1500));
-    setText("This is a sample transcription from local Whisper");
+    try {
+      const formData = new FormData();
+      formData.append("audio", blob, "recording.webm");
+
+      const response = await fetch("http://localhost:3001/api/transcribe", {
+        method: "POST",
+        body: formData,
+      });
+
+      console.log("Server responded with status:", response.status);
+
+      if (!response.ok) {
+        const text = await response.text();
+        console.error("Server error response:", text);
+        throw new Error("Transcription failed");
+      }
+
+      const data = await response.json();
+      setText(data.transcription.trim());
+      console.log("Transcription result:", data.transcription);
+    } catch (err) {
+      console.error("Transcription error:", err);
+      setText("[Transcription failed]");
+    }
   };
 
   const handleSubmit = () => {
