@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { Camera, ImageIcon, TicketX } from "lucide-react";
+import { Camera, ImageIcon } from "lucide-react";
 import { Button } from "../reusable-ui-components/Button"
 
 import ChatPanel from "./sub-views/ChatPanel";
