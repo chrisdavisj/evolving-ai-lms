@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 import { Camera, ImageIcon } from "lucide-react";
 import { Button } from "../reusable-ui-components/Button"
+import { API_ENDPOINTS } from "../api/endpoints";
 
 import ChatPanel from "./sub-views/ChatPanel";
 import CameraPanel from "./sub-views/CameraPanel";
@@ -128,7 +129,7 @@ export default function InferenceWindow() {
       const formData = new FormData();
       formData.append("audio", blob, "recording.webm");
 
-      const response = await fetch("http://localhost:3001/api/transcribe", {
+      const response = await fetch(API_ENDPOINTS.TRANSCRIBE, {
         method: "POST",
         body: formData,
       });
