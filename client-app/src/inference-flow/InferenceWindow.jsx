@@ -199,10 +199,12 @@ export default function InferenceWindow() {
             images: base64Images,
           };
         })
-      );    
+      );
+      
+      const learnerContext = localStorage.getItem("learnerContext") || "";    
 
       const payload = {
-      learner_context: "learnerContext",
+      learner_context: learnerContext,
       conversation: conversation,
     };
 
