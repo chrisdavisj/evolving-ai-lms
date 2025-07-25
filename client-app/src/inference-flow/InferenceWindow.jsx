@@ -192,6 +192,9 @@ export default function InferenceWindow() {
               console.warn(`Failed to convert blob at entry ${index}:`, err);
             }
           }
+          else if (entry.image && typeof entry.image === "string" && entry.image.startsWith("data:image")) {
+            base64Images = [entry.image];
+          }
 
           return {
             role: entry.role,
