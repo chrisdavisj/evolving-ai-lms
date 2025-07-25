@@ -14,4 +14,4 @@ fi
 (cd transcribe-edge && ./build-whisper-local.sh) &
 
 # Build and run client app on port 80
-(cd client-app && npm install && npm run build && sudo env "PATH=$PATH" npx vite preview --port 80)
+(cd client-app && npm install && npm run build && sudo env "PATH=$PATH" npx vite preview --host 0.0.0.0 --port 80)
