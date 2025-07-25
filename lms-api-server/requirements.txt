@@ -1,2 +1,8 @@
 fastapi
 uvicorn
+ollama
+faiss-gpu
+sentence-transformers
+SPARQLWrapper
+rdflib
+numpy==1.26.4
