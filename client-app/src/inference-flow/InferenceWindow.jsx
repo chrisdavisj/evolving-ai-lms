@@ -153,10 +153,19 @@ export default function InferenceWindow() {
 
   const handleSubmit = () => {
     const inputContent = mode === 'image' ? image : capturedImage;
-    setChatHistory(prev => [...prev, { role: 'user', text, image: inputContent }]);
-
-    chat_inference();
-
+    const newEntry = { role: 'user', text, image: inputContent };
+    setChatHistory(prev => [...prev, newEntry]);
+    
+    const lastEntry = chatHistory[chatHistory.length - 1];
+    
+    const isDuplicate =
+    lastEntry &&
+    lastEntry.role === newEntry.role &&
+    lastEntry.text === newEntry.text &&
+    lastEntry.image === newEntry.image;
+    
+    const updatedHistory = isDuplicate ? [...chatHistory] : [...chatHistory, newEntry];
+    chat_inference(updatedHistory);
     setText("");
   };
 
@@ -168,10 +177,10 @@ export default function InferenceWindow() {
       reader.onerror = (error) => reject(error);
     });
     
-  const chat_inference = async () => {
+  const chat_inference = async (history) => {
     try {
       const conversation = await Promise.all(
-        chatHistory.map(async (entry, index) => {
+        history.map(async (entry, index) => {
           let base64Images = [];
 
           if (entry.image && typeof entry.image === "string" && entry.image.startsWith("blob:")) {
@@ -190,10 +199,12 @@ export default function InferenceWindow() {
             images: base64Images,
           };
         })
-      );    
+      );
+      
+      const learnerContext = localStorage.getItem("learnerContext") || "";    
 
       const payload = {
-      learner_context: "learnerContext",
+      learner_context: learnerContext,
       conversation: conversation,
     };
 

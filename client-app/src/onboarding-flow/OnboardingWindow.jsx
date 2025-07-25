@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { API_ENDPOINTS } from "../api/endpoints";
 import "./OnboardingWindow.css";
 
 export default function OnboardingWindow({ onComplete }) {
@@ -37,63 +38,47 @@ export default function OnboardingWindow({ onComplete }) {
     return Object.keys(newErrors).length === 0;
   };
 
-  // const handleSubmit = async (e) => {
-//     e.preventDefault();
-
-//     // Basic validation
-//     if (!formData.age || !formData.qualification || !formData.description) {
-//       setError("Please fill out all required fields.");
-//       return;
-//     }
-
-//     setError("");
-//     setLoading(true);
-
-//     try {
-//       const res = await fetch("http://localhost:3001/api/onboarding", {
-//         method: "POST",
-//         headers: { "Content-Type": "application/json" },
-//         body: JSON.stringify(formData),
-//       });
-
-//       if (!res.ok) {
-//         throw new Error("Failed to submit onboarding data.");
-//       }
-
-//       const data = await res.json();
-//       const context = data.learner_context || "No context returned.";
-
-//       // Store locally
-//       localStorage.setItem("onboardingData", JSON.stringify(formData));
-//       localStorage.setItem("learnerContext", context);
-//       setResponseContext(context);
-
-//       // Optional: pass context back to app
-//       if (onComplete) onComplete(context);
-//     } catch (err) {
-//       console.error(err);
-//       setError("Submission failed. Please try again later.");
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
 
-    const context = `Learner Summary:
-    - Age: ${formData.age}
-    - Qualification: ${formData.qualification}
-    - Goals: ${formData.goals}
-    - Challenges: ${formData.challenges}
-    - Description: ${formData.description}`;
+    try {
+      const payload = {
+        age: formData.age,
+        qualification: formData.qualification,
+        goals: formData.goals,
+        challenges: formData.challenges,
+        description: formData.description,
+      };
+      console.log("Submitting onboarding data:", payload);
 
-    localStorage.setItem("onboardingData", JSON.stringify(formData));
-    localStorage.setItem("learnerContext", context);
-    setLearnerContext(context);
+      const response = await fetch(API_ENDPOINTS.GENERATE_LEARNER_CONTEXT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
 
-    if (onComplete) onComplete();
+      if (!response.ok) {
+        const text = await response.text();
+        console.error("Server error response:", text);
+        throw new Error("Failed to submit onboarding data.");
+      }
+
+      const data = await response.json();
+      console.log("Onboarding result:", data);
+
+      const context = data.learnerContext || "No context returned.";
+
+      // Store locally
+      localStorage.setItem("onboardingData", JSON.stringify(formData));
+      localStorage.setItem("learnerContext", context.trim());
+      
+      setLearnerContext(context.trim());
+
+      if (onComplete) onComplete(context);
+    } catch (err) {
+      console.error("Submission failed",err);
+    }
   };
 
   const handleReset = () => {
