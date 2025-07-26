@@ -229,14 +229,17 @@ export default function InferenceWindow() {
 
       const data = await response.json();
       console.log("Inference result:", data);
-      
-      setChatHistory(prev => [...prev, { role: 'assistant', text: `${data.explanation.trim()} \n\n\n Flashcard ${data.flashcard_contents.trim()}` }]);
+      setChatHistory(prev => [...prev, { role: 'assistant', text: `${data.explanation.trim()} \n\n\n ${cleanMarkdown(data.flashcard_contents.trim())}` }]);
       
       setFlashcard(data.flashcard_contents.trim());
 
     } catch (err) {
       console.error("Inference error:", err);
     }
+  }
+
+  function cleanMarkdown(text) {
+    return text.replace(/^```(?:\w+)?\s*([\s\S]*?)```$/, "$1").trim();
   }
 
   const dismissFlashcard = () => {

@@ -7,13 +7,13 @@
   pointer-events: auto;
 }
 .flashcard-card {
-  background: rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(12px);
+  background: rgba(0, 0, 0, 0.22);
+  backdrop-filter: blur(40px);
   border-radius: 1rem;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
   padding: 1rem 1.25rem;
   color: #f9fafb;
-  max-width: 280px;
+  max-width: 500px;
   font-size: 1rem;
   font-weight: 500;
   line-height: 1.4;
@@ -33,6 +33,13 @@
   flex: 1;
   margin: 0;
   word-break: break-word;
+  text-align: left;       
+  font-size: 0.65rem;     
+  line-height: 1.25; 
+}
+
+.flashcard-text li {
+  line-height: 1.2;
 }
 
 .flashcard-close {
