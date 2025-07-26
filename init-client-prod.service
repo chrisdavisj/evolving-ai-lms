@@ -1,0 +1,16 @@
+[Unit]
+Description=Run init-client-prod-ec2.sh at boot
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ec2-user
+WorkingDirectory=/home/ec2-user/evolving-ai-lms
+ExecStart=/home/ec2-user/evolving-ai-lms/init-client-prod-ec2.sh
+Restart=on-failure
+StandardOutput=append:/home/ec2-user/init-client-prod.log
+StandardError=append:/home/ec2-user/init-client-prod.err
+
+[Install]
+WantedBy=multi-user.target
