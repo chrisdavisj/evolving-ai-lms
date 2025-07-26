@@ -40,4 +40,39 @@
 
 .chat-text {
   margin: 0;
+  font-size: 0.8rem;
+  text-align: left;
+  line-height: 1.4;
+}
+
+.chat-text h1, .chat-text h2, .chat-text h3 {
+  margin: 0.5rem 0;
+  line-height: 1.2;
+}
+
+.chat-text h1 {
+  font-size: 1.5rem;
+}
+
+.chat-text h2 {
+  font-size: 1.25rem;
+}
+
+.chat-text h3 {
+  font-size: 1rem;
+}
+
+.chat-text ul {
+  padding-left: 1.25rem;
+  margin: 0.5rem 0;
+  line-height: 1.2;
+}
+
+.chat-text li {
+  margin-bottom: 0.25rem;
+  line-height: 1.2;
+}
+
+.chat-text strong {
+  font-weight: 600;
 }

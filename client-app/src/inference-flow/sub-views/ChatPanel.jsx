@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import ReactMarkdown from "react-markdown";
 import "./ChatPanel.css";
 
 export default function ChatPanel({ chatHistory }) {
@@ -13,7 +14,12 @@ export default function ChatPanel({ chatHistory }) {
           className={`chat-bubble ${msg.role}`}
         >
           {msg.image && <img src={msg.image} alt="" className="chat-image" />}
-          <p className="chat-text">{msg.text}</p>
+          {msg.role === "assistant" && msg.text.trim().startsWith("#") ? (
+            <div className="chat-text">
+              <ReactMarkdown components={{a: ({ node, ...props }) => {const href = props.href?.trim(); if (!href) {return <span>{props.children}</span>;}return (<a href={href} target="_blank" rel="noopener noreferrer">{props.children}</a>);},}}>
+                {msg.text.replace(/^```(?:markdown)?\s*([\s\S]*?)```$/, "$1").trim()}
+              </ReactMarkdown>
+            </div>) : (<p className="chat-text">{msg.text}</p>)}
         </motion.div>
       ))}
     </div>
