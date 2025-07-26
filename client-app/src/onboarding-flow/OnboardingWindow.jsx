@@ -13,6 +13,7 @@ export default function OnboardingWindow({ onComplete }) {
 
   const [errors, setErrors] = useState({});
   const [learnerContext, setLearnerContext] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const saved = localStorage.getItem("onboardingData");
@@ -41,6 +42,7 @@ export default function OnboardingWindow({ onComplete }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
+    setLoading(true);
 
     try {
       const payload = {
@@ -78,6 +80,8 @@ export default function OnboardingWindow({ onComplete }) {
       if (onComplete) onComplete(context);
     } catch (err) {
       console.error("Submission failed",err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -177,6 +181,10 @@ export default function OnboardingWindow({ onComplete }) {
           </div>
         )}
       </form>
+      {loading && (<div className="loading-overlay">
+        <div className="loading-spinner" />
+          <p>Building Learner Model...</p>
+        </div>)}
     </div>
   );
 }

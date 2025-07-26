@@ -22,6 +22,7 @@ export default function InferenceWindow() {
   const [capturedImage, setCapturedImage] = useState(null);
   const [showFlash, setShowFlash] = useState(false);
   const [volume, setVolume] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
@@ -178,6 +179,7 @@ export default function InferenceWindow() {
     });
     
   const chat_inference = async (history) => {
+    setLoading(true);
     try {
       const conversation = await Promise.all(
         history.map(async (entry, index) => {
@@ -235,6 +237,8 @@ export default function InferenceWindow() {
 
     } catch (err) {
       console.error("Inference error:", err);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -294,6 +298,10 @@ export default function InferenceWindow() {
         </div>
         <ChatPanel chatHistory={chatHistory} />
       </div>
+      {loading && (<div className="loading-overlay">
+        <div className="loading-spinner" />
+          <p>Thinking...</p>
+        </div>)}
     </div>
   );
 }
