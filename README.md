@@ -20,25 +20,29 @@
 **Input:** What axioms should be defined for the LearningStep?  
 **Image:**  
 ![currKG](images/currKG-schema.png)  
-**Output:** [Example 1 Output](sample-examples/example1.md)
+**Output:** [Example 1 Output](sample-outputs/example1.md)
 
 #### Example 2
 
 **Input:** How should I arrange the data in this image as a knowledge graph?  
 **Image:**  
 ![Dog Bites KG](images/dog-bite-kg.jpg)  
-**Output:** [Example 2 Output](sample-examples/example2.md)
+**Output:** [Example 2 Output](sample-outputs/example2.md)
 
 #### Example 3
 
 **Input:** Identify interesting characteristics of this knowledge graph.  
 **Image:**  
 ![Film KG](images/film-kg.png)  
-**Output:** [Example 3 Output](sample-examples/example3.md)
+**Output:** [Example 3 Output](sample-outputs/example3.md)
 
 #### Example 4
 
-**Input:** What is FNOL in this image and what can you tell me about it?  
+**Input:** What is FNOL in this image, and what can you tell me about it?  
 **Image:**  
 ![Insurance KG](images/insurance-kg.png)  
-**Output:** [Example 4 Output](sample-examples/example4.md)
+**Output:** [Example 4 Output](sample-outputs/example4.md)
+
+### Instructions on Running the App
+ - Use the bash script `init-client-dev.sh` to run the client app server, edge transcribe server, and visit `localhost:5173` to interact with the app
+ - use the [Singularity Recipe](singulatity-recipe/lms-api-server.def) to build the container using command `singularity build lms-api-server.sif lms-api-server/def`  and run the container using `singularity run --nv lms-api-server.sif` to get the lms-api-server up and running.
